@@ -1,0 +1,145 @@
+queue
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<limits.h>
+
+struct node{
+    int data;
+    struct node* next;
+};
+
+struct Queue{
+    unsigned capacity;
+    unsigned size;
+    struct node* head;
+    struct node* tail;
+};
+
+
+// Prototipos de funciones
+struct Queue* createQueue(unsigned capacity);
+struct node* new_node(int data);
+int isEmpty(struct Queue* queue);
+int isFull(struct Queue* queue);
+void push(struct Queue* queue, int data);
+int pop(struct Queue* queue);
+void display(struct Queue* queue);
+
+// Función para crear una nueva cola con la capacidad dada
+struct Queue* createQueue(unsigned capacity) {
+    struct Queue* queue = (struct Queue*)malloc(sizeof(struct Queue));
+    if (queue == NULL) {
+        printf("Error: No se pudo asignar memoria para la cola\n");
+        exit(1);
+    }
+    queue->capacity = capacity;
+    queue->size = 0;
+    queue->head = NULL;
+    queue->tail = NULL;
+    return queue;
+}
+struct node* new_node(int data){
+    struct node* new_node = (struct node*)malloc(sizeof(struct node));
+    if(new_node==NULL){
+        printf("No se pudo asignar memoria para el nodo");
+        return NULL;
+    }
+    new_node->data=data;
+    new_node->next=NULL;
+    
+    return new_node;
+}
+
+int isEmpty(struct Queue* queue){
+    return  queue->size == 0;
+}
+
+int isFull(struct Queue* queue){
+    return  queue->size == queue->capacity;
+}
+
+void push(struct Queue* queue, int data){
+    if(isFull(queue))
+    {
+        printf("La cola esta llena\n");
+        return;
+    }
+    
+    struct node* new_node_ptr = new_node(data); // Cambio de nombre aquí
+    
+    if(queue->tail == NULL){
+        queue->head=new_node_ptr;
+        queue->tail=new_node_ptr;
+    }
+    else{
+        queue->tail->next=new_node_ptr;
+        queue->tail=new_node_ptr;
+    }
+    
+    queue->size++;
+}
+
+
+int pop(struct  Queue* queue){
+    if(isEmpty(queue)){
+       printf("La cola esta vacia\n");
+       return INT_MIN;
+    }
+    struct node* temp = queue->head;
+    int data = temp->data; 
+    queue->head = queue->head->next; 
+    free(temp); 
+    queue->size--;
+    
+    return data;
+}
+
+void display(struct  Queue* queue){
+    struct node* temp= queue->head;
+    while(temp != NULL){
+        printf("%d", temp->data);
+        temp=temp->next;
+    }
+    printf("\n");
+}
+
+int main(){
+    int op, data, capacity;
+    
+    printf("Dime el tamaño que quieres para tu cola\n");
+    scanf("%d", &capacity);
+    struct Queue* queue = createQueue(capacity);
+    
+    while (1) {
+        printf("Que quieres hacer?\n"); 
+        printf("1. Añadir a la cola\n2. Eliminar de la cola\n3. Ver la cola\n4. Salir\n");
+        printf("\nSelecciona una opción: ");
+        scanf("%d", &op);
+        switch(op)
+        {
+            case 1:
+                printf("Que elemento quieres añadir a la cola?\n");
+                scanf("%d", &data);
+                push(&queue, data);
+                break;
+    
+            case 2:
+                printf("Se elimino el elemento: %d\n", pop(&queue));
+                break;
+    
+            case 3:
+                printf("Los elementos de la cola son:\n");
+                display(&queue);
+                break;
+    
+            case 4:
+                return 0;
+    
+            default:
+                printf("Opción no válida. Intenta de nuevo.\n");
+                break;
+        }
+    }
+        return 0;
+}
